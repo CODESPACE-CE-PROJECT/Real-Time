@@ -4,18 +4,17 @@ import { config } from "dotenv";
 import os from "os";
 import helmet from "helmet";
 import cluster from "cluster";
-import swaggerDocs from "./utils/swagger";
 import logger from "./utils/logger";
 
 // Router
 import { serverRouter } from "./routes/server.route";
 import { environment } from "./config/environment";
-import { compilerRouter } from "./routes/compiler.route";
+import { realTimeRouter } from "./routes/realtime.route";
 
 config();
 
 const app: Application = express();
-const coreTotal: number = Math.min(os.cpus().length, 4);
+const coreTotal: number = Math.min(os.cpus().length, 2);
 app.use(express.json({ limit: "200kb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
@@ -23,7 +22,7 @@ app.use(cors());
 
 // API Route
 app.use("/", serverRouter);
-app.use("/compiler", compilerRouter);
+app.use("/", realTimeRouter);
 
 const errorHandler = async (
   err: any,
@@ -48,10 +47,10 @@ if (cluster.isPrimary) {
   }
   cluster.on("exit", (worker, _code, _signal) => {
     logger.info(`Worker ${worker.process.pid} died`);
+    cluster.fork();
   });
 } else {
   app.listen(environment.PORT, "0.0.0.0", () => {
     logger.info(`Server ready on port ${environment.PORT}`);
-    swaggerDocs(app);
   });
 }
