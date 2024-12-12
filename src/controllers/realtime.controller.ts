@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { RequestWithUser } from "../interfaces/auth.interface";
 import { userService } from "../services/user.service";
-import { checkRedisHealth, redisClient, redisDisconnect, subscribeTopic } from "../services/redis.service";
+import { redisClient, subscribeTopic } from "../services/redis.service";
 
 export const realTimeController = {
   updateStatusUser: async (req: Request, res: Response) => {
@@ -36,17 +36,21 @@ export const realTimeController = {
     };
     res.writeHead(200, headers)
 
-    await subscribeTopic('submission', (message: any) => {
-      console.log(message)
+    const username = (req as RequestWithUser).user.username
+    const submissionState = await redisClient.get(`submissionState-${username}`)
+    const cacheData = await redisClient.get(`submission-${username}`)
+    const updateData = { ...JSON.parse(cacheData as string), submissionState: submissionState }
+    if (cacheData) {
+      res.write(`data: ${JSON.stringify(updateData)} \n\n`)
+    }
+    await subscribeTopic('submission', async (message: any) => {
+      const messageJson = JSON.parse(message)
+      const submissionState = await redisClient.get(`submissionState-${username}`)
+      if (username === messageJson.username) {
+        res.write(`data: ${JSON.stringify({ ...messageJson, submissionState })} \n\n`)
+      }
     })
 
-    req.on('close', async () => {
-      await redisDisconnect()
-    })
-
-    req.on('error', async () => {
-      await redisDisconnect()
-    })
   },
 
   getResultCompile: async (req: Request, res: Response) => {
@@ -57,16 +61,16 @@ export const realTimeController = {
     };
     res.writeHead(200, headers)
 
+    const username = (req as RequestWithUser).user.username
+    const cacheData = await redisClient.get(`submission-${username}`)
+    if (cacheData) {
+      res.write(`data: ${cacheData} \n\n`)
+    }
     await subscribeTopic('compiler', (message: any) => {
-      console.log(message)
-    })
-
-    req.on('close', async () => {
-      await redisDisconnect()
-    })
-
-    req.on('error', async () => {
-      await redisDisconnect()
+      const messageJson = JSON.parse(message)
+      if (username === messageJson.username) {
+        res.write(`data: ${message} \n\n`)
+      }
     })
   }
 }

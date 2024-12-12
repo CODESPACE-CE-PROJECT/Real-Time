@@ -18,7 +18,6 @@ export const checkRedisHealth = async (): Promise<boolean> => {
 
 export const subscribeTopic = async (topic: string, onMessage: (message: any) => void) => {
   try {
-    redisClient.connect()
     if (await checkRedisHealth()) {
       const subscriber = redisClient.duplicate()
       await subscriber.connect()

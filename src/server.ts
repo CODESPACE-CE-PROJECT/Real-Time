@@ -10,6 +10,7 @@ import logger from "./utils/logger";
 import { serverRouter } from "./routes/server.route";
 import { environment } from "./config/environment";
 import { realTimeRouter } from "./routes/realtime.route";
+import { redisClient } from "./services/redis.service";
 
 config();
 
@@ -52,5 +53,6 @@ if (cluster.isPrimary) {
 } else {
   app.listen(environment.PORT, "0.0.0.0", () => {
     logger.info(`Server ready on port ${environment.PORT}`);
+    redisClient.connect()
   });
 }
