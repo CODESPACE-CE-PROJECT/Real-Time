@@ -17,7 +17,7 @@ jobs:
               BACKEND_URL: ${{ secrets.BACKEND_URL }} 
               REDISHOST: ${{ secrets.REDISHOST }}
               JWT_SECRET: ${{ secrets.JWT_SECRET }} 
-            run:
+            run: |
               echo "BACKEND_URL=$BACKEND_URL" >> .env
               echo "REDISHOST=$REDISHOST" >> .env
               echo "JWT_SECRET=$JWT_SECRET" >> .env
@@ -39,5 +39,5 @@ jobs:
               url: ${{ secrets.DISCORD_WEBHOOK }}
               method: 'POST'
               customHeaders: '{"Content-Type": "application/json"}'
-              data: '{"content": "CE PROJECT Real Time Build ✅","embeds": [{"title": "Real Time URL","description": "https://realtime-codespace.unixvextor.com"}]}'
+              data: '{"content": "CE PROJECT Real Time Build ✅","embeds": [{"title": "Real Time URL","description": "https://codespace-realtime.home.srv-demo-2.unixvextor.com"}]}'
 

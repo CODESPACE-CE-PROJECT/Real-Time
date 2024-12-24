@@ -14,6 +14,14 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       REDISHOST: ${REDISHOST}
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.real-time-codespace.loadbalancer.server.port: "3003"
+      traefik.http.services.real-time-codespace.loadbalancer.server.scheme: "http"
+      traefik.http.routers.real-time-codespace-https.entrypoints: "websecure"
+      traefik.http.routers.real-time-codespace-https.rule: "Host(`codespace-realtime.srv-demo-2.home.unixvextor.com`)"
+      traefik.http.routers.real-time-codespace-https.tls: "true"
+      traefik.http.routers.real-time-codespace-https.tls.certresolver: "cloudflare" 
     networks:
         - backend
 
