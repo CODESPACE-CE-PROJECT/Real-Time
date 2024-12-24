@@ -1,0 +1,19 @@
+---
+networks:
+  backend:
+    external: true
+services:
+  real-time:
+    container_name: real-time 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PORT: 3003
+      BACKEND_URL: ${BACKEND_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      REDISHOST: ${REDISHOST}
+    restart: unless-stopped
+    networks:
+        - backend
+
