@@ -1,43 +1,42 @@
 name: Deployment
 on:
   push:
-      branches: ['main']
+    branches: ["main"]
   pull_request:
-      branches: ['dev']
+    branches: ["dev"]
 jobs:
   deploy:
-      runs-on: self-hosted
-      if: github.event_name == 'push'
-      steps:
-          - name: Clone Repo 🤖
-            uses: actions/checkout@v3
+    runs-on: self-hosted
+    if: github.event_name == 'push'
+    steps:
+      - name: Clone Repo 🤖
+        uses: actions/checkout@v3
 
-          - name: Set Environment Variables 🔠
-            env:
-              BACKEND_URL: ${{ secrets.BACKEND_URL }} 
-              REDISHOST: ${{ secrets.REDISHOST }}
-              JWT_SECRET: ${{ secrets.JWT_SECRET }} 
-            run: |
-              echo "BACKEND_URL=$BACKEND_URL" >> .env
-              echo "REDISHOST=$REDISHOST" >> .env
-              echo "JWT_SECRET=$JWT_SECRET" >> .env
+      - name: Set Environment Variables 🔠
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          REDISHOST: ${{ secrets.REDISHOST }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          echo "BACKEND_URL=$BACKEND_URL" >> .env
+          echo "REDISHOST=$REDISHOST" >> .env
+          echo "JWT_SECRET=$JWT_SECRET" >> .env
 
-          - name: Clear Cache 🫧
-            run: |
-              docker stop real-time || true
-              docker rm real-time || true
-              docker rmi real-time-realtime:latest || true
+      - name: Clear Cache 🫧
+        run: |
+          docker stop real-time || true
+          docker rm real-time || true
+          docker rmi real-time-real-time:latest || true
 
-          - name: Run Image ✅
-            run: |
-              docker compose up -d
+      - name: Run Image ✅
+        run: |
+          docker compose up -d
 
-          - name: Message ✉️
-            uses: fjogeleit/http-request-action@v1
-            with:
-              timeout: 60000
-              url: ${{ secrets.DISCORD_WEBHOOK }}
-              method: 'POST'
-              customHeaders: '{"Content-Type": "application/json"}'
-              data: '{"content": "CE PROJECT Real Time Build ✅","embeds": [{"title": "Real Time URL","description": "https://codespace-realtime.srv-demo-2.home.unixvextor.com"}]}'
-
+      - name: Message ✉️
+        uses: fjogeleit/http-request-action@v1
+        with:
+          timeout: 60000
+          url: ${{ secrets.DISCORD_WEBHOOK }}
+          method: "POST"
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"content": "CE PROJECT Real Time Build ✅","embeds": [{"title": "Real Time URL","description": "https://codespace-realtime.srv-demo-2.home.unixvextor.com"}]}'
