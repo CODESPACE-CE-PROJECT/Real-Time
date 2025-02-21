@@ -53,6 +53,6 @@ if (cluster.isPrimary) {
 } else {
   app.listen(environment.PORT, "0.0.0.0", () => {
     logger.info(`Server ready on port ${environment.PORT}`);
-    redisClient.connect()
+    redisClient.connect();
   });
 }
