@@ -72,7 +72,7 @@ export const realTimeController = {
     res.write(`data: ok\n\n`);
 
     const username = (req as RequestWithUser).user.username;
-    const cacheData = await redisClient.get(`submission-${username}`);
+    const cacheData = await redisClient.get(`compiler-${username}`);
     if (cacheData) {
       res.write(`data: ${cacheData} \n\n`);
     }
