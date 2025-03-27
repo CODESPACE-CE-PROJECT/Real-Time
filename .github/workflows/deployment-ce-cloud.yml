@@ -1,10 +1,10 @@
 name: Deployment
 on:
   push:
-    branches: ["dev"]
+    branches: ["main"]
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ce-cloud
     if: github.event_name == 'push'
     steps:
       - name: Clone Repo 🤖
@@ -14,7 +14,7 @@ jobs:
         env:
           BACKEND_URL: ${{ secrets.BACKEND_URL }}
           REDISHOST: ${{ secrets.REDISHOST }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET_CE_CLOUD }}
         run: |
           echo "BACKEND_URL=$BACKEND_URL" >> .env
           echo "REDISHOST=$REDISHOST" >> .env
@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Image ✅
         run: |
-          docker compose up -d
+          docker compose -f docker-compose.ce-cloud.yaml yaml -d
 
       - name: Message ✉️
         uses: fjogeleit/http-request-action@v1
@@ -37,4 +37,4 @@ jobs:
           url: ${{ secrets.DISCORD_WEBHOOK }}
           method: "POST"
           customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"content": "CE PROJECT Real Time Build ✅","embeds": [{"title": "Real Time URL","description": "https://codespace-realtime.srv-demo-2.home.unixvextor.com"}]}'
+          data: '{"content": "CE PROJECT Real Time CE Cloud ✅","embeds": [{"title": "Real Time URL","description": "https://ce67-07.cloud.ce.kmitl.ac.th/realtime"}]}'
