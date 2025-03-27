@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Image ✅
         run: |
-          docker compose -f docker-compose.ce-cloud.yaml yaml -d
+          docker compose -f docker-compose.ce-cloud.yaml up -d
 
       - name: Message ✉️
         uses: fjogeleit/http-request-action@v1
