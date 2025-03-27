@@ -13,7 +13,10 @@ export const realTimeController = {
 
     res.writeHead(200, headers);
     res.write(`data: ${(req as RequestWithUser).user.username} connected\n\n`);
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+    const ip =
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.socket.remoteAddress ||
+      "";
 
     const token = (req as RequestWithUser).user.token;
 
